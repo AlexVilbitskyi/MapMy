@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import GoogleMapReact from 'google-map-react';
 import { 
     Container, 
@@ -6,6 +6,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Marker from '../Marker/Marker.js'
+import usePoints from '../usePoints/usePoints.js'
 
 const useStyles = makeStyles((theme) => ({
     mapContainer: {
@@ -29,17 +30,13 @@ const mapProps = {
 };
  
 function MyMaps(props) {
-    const [fetchedPoints, setFetchedPoints] = useState([])
-    useEffect(() => {
-      (async () => {
-        setFetchedPoints(await JSON.parse(localStorage.getItem('points')))
-      })()
-    }, [])
+    const { fetchedPoints } = usePoints()
 
-    const { selectMap } = props;
-        useEffect(() => {
-            selectMap();
-        }, [selectMap]);
+    const { setSelectedTab } = props;
+    useEffect(() => {
+        setSelectedTab('Map');
+    }, [setSelectedTab]);
+
     const classes = useStyles();
  
     return (
@@ -59,16 +56,16 @@ function MyMaps(props) {
                 defaultCenter={mapProps.center}
                 defaultZoom={mapProps.zoom}
             >
-                { fetchedPoints || Array.isArray(fetchedPoints) > 0 ? fetchedPoints.map((element) => {
-                return (
-                    <Marker
-                        key={element.id}
-                        lat={element.lat}
-                        lng={element.lng}
-                        text={element.name === 'Point' ? `${element.name} ${element.helpNum}` : element.name }
-                        selected={element.star}
-                    />)}
-                ) : null } 
+                {fetchedPoints.length > 0 && fetchedPoints.map((element) => {
+                    return (
+                        <Marker
+                            key={element.id}
+                            lat={element.lat}
+                            lng={element.lng}
+                            text={element.name === 'Point' ? `${element.name} ${element.helpNum}` : element.name }
+                            selected={element.star}
+                        />)}
+                )} 
             </GoogleMapReact>
         </Container>
     );

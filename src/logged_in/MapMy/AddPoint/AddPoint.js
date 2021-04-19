@@ -11,10 +11,11 @@ import {
     Backdrop,
     Modal
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import theme from '../../theme';
 import { Link } from "react-router-dom";
+import { makeStyles } from '@material-ui/core/styles';
+import theme from '../../../theme';
 import Marker from '../Marker/Marker.js'
+import usePoints from '../usePoints/usePoints.js'
 
 const useStyles = makeStyles((theme) => ({
     mapContainer: {
@@ -49,42 +50,27 @@ const mapProps = {
 };
 
 function AddPoint(props) {
+    const classes = useStyles();
+
+    const { addPoint } = usePoints();
     const [coordinates, setCoordinates] = useState(null);
     const [pointName, setPointName] = useState('');
-    const classes = useStyles();
-    const { selectNone } = props;
-
     const [openErrorModal, setOpenErrorModal] = useState(false);
     const [openFinishModal, setOpenFinishModal] = useState(false);
 
+    const { setSelectedTab } = props;
     useEffect(() => {
-        selectNone()
-    }, [selectNone]);
+        setSelectedTab('none');
+    }, [setSelectedTab]);
 
-    const addPoint = async () => {
+    function addPointHandler() {
         if(!coordinates) {
             setOpenErrorModal(true)
             return null 
-        }
-        
-        const points = await JSON.parse(localStorage.getItem('points'))
-        let helpArr = [0]
-        if(  points !== null) {
-            for (let item of points) {
-                helpArr.push(item.helpNum)
-            }
-            helpArr.sort( (a, b) => b - a )
+        } else {
+            addPoint(coordinates, pointName)()
         }
 
-        const newHelpPoint = {
-            id: Date.now(),
-            lat: coordinates.lat,
-            lng: coordinates.lng,
-            helpNum: helpArr[0] + 1 || 1,
-            name: pointName || 'Point'
-        }
-
-        await localStorage.setItem('points', JSON.stringify(!points ? [newHelpPoint] : [...points, newHelpPoint]))
         setOpenFinishModal(true)
         setCoordinates(null)
         setPointName('')
@@ -114,12 +100,11 @@ function AddPoint(props) {
                         })
                     }}
                 >
-                    {coordinates ? 
+                    {coordinates && 
                         <Marker
                             lat={coordinates.lat}
                             lng={coordinates.lng}
-                        /> :
-                        null
+                        /> 
                     }  
                 </GoogleMapReact>
             </Box>
@@ -170,7 +155,7 @@ function AddPoint(props) {
                         fullWidth={true}
                         className={classes.button}
                         size="medium"
-                        onClick={addPoint}
+                        onClick={() => addPointHandler()}
                     >
                         ADD POINT
                     </Button>

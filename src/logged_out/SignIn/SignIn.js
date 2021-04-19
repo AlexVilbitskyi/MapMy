@@ -12,7 +12,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
-import { useAuth } from "../context/auth";
+import { useAuth } from "../../context/auth";
 import { Redirect } from "react-router-dom";
 import GoogleBtn from '../GoogleBtn/GoogleBtn';
 import background from "./backgrondSignIn.svg";
@@ -74,19 +74,19 @@ export default function SignIn(props) {
     setIsLoggedIn(true);
   }, [setIsLoggedIn]);
 
-  const submit = event => {
+  const handleFormSubmit = useCallback((event) => {
     event.preventDefault()
-    if (password !== 'ExamplePassword') {
+    if (event.target.elements.password.value !== 'ExamplePassword') {
       setStatus("invalid_password")
-    } else if (email !== 'ExampleEmail') {
+    } else if (event.target.elements.email.value !== 'ExampleEmail') {
       setStatus("invalid_email")
     } else {
       setStatus(null)
       logIn()
     }
-  }
+  }, []);
 
-  const logIn = async() => {
+  const logIn = useCallback(async () => {
     let userInfo = {
       email,
       password
@@ -96,18 +96,19 @@ export default function SignIn(props) {
     } catch(e) {
       console.log(e)
     }
-  }
+  }, [email, password]);
 
   if (isLoggedIn) {
     return <Redirect to="/" />;
   }
+
 
   return (
     <div className={classes.root}>
       <Container component="main" maxWidth="xs">
         <div className={classes.paper}>
             <img src={logo} className={classes.logo} alt="logo"></img>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} onSubmit={handleFormSubmit} noValidate>
             <Box component="div" className={classes.google}>
               <GoogleBtn />
             </Box>
@@ -186,7 +187,7 @@ export default function SignIn(props) {
               variant="contained"
               className={classes.submit}
               color="primary"
-              onClick={submit}
+              // onClick={submit}
               size="large"
             >
               Sign In

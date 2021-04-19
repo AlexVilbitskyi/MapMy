@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
-import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { 
     Drawer, 
@@ -21,7 +20,7 @@ import MapIcon from '@material-ui/icons/Map';
 import background from "./appBarBackground.png";
 import logo from "./Logo.svg";
 import navbckgr from "./NavBackgr.svg";
-import { useAuth } from "../../context/auth";
+import { useAuth } from "../../../context/auth";
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -151,9 +150,7 @@ function Header(props) {
         <React.Fragment>
             <AppBar
                 position="relative"
-                className={clsx(classes.appBar, {
-                [classes.appBarShift]: open,
-                })}
+                className={classes.appBar}
             >
                 <Toolbar>
                     <IconButton
@@ -161,7 +158,7 @@ function Header(props) {
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
                         edge="start"
-                        className={clsx(classes.menuButton, open && classes.hide)}
+                        className={classes.menuButton}
                     >
                         <MenuIcon />
                     </IconButton>

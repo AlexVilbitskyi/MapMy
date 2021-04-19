@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { 
   Button, 
   Typography, 
@@ -15,13 +15,14 @@ import { makeStyles } from '@material-ui/core/styles'
 import CloseIcon from '@material-ui/icons/Close'
 import StarIcon from '@material-ui/icons/Star'
 import StarBorderIcon from '@material-ui/icons/StarBorder'
-import theme from '../../theme'
 import { Link } from "react-router-dom"
 import {
   CSSTransition,
   TransitionGroup,
 } from 'react-transition-group';
+import theme from '../../../theme'
 import './transition.css';
+import usePoints from '../usePoints/usePoints.js'
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -78,31 +79,13 @@ const useStyles = makeStyles((theme) => ({
 function MyPoints(props) {
     const classes = useStyles()
 
-    const [fetchedPoints, setFetchedPoints] = useState([])
+    const { fetchedPoints, deletePoint, togleLikePoint } = usePoints();
+
+    const { setSelectedTab } = props;
     useEffect(() => {
-      (async () => {
-        setFetchedPoints(await JSON.parse(localStorage.getItem('points')))
-      })()
-    }, [])
+        setSelectedTab('Point');
+    }, [setSelectedTab]);
 
-    const { selectPoint } = props
-    useEffect(() => {
-        selectPoint()
-    }, [selectPoint])
-
-    const handleToggle = (index) => async () => {
-      const helpArr = [...fetchedPoints]
-      helpArr[index].star = !helpArr[index].star
-      await localStorage.setItem('points', JSON.stringify(helpArr))
-      setFetchedPoints(helpArr)
-    }
-
-    const deletePoint = (id) => async () => {
-      let helpArr = fetchedPoints.filter(item => item.id !== id)
-      await localStorage.setItem('points', JSON.stringify(helpArr))
-      setFetchedPoints(helpArr.length > 0 ? helpArr : null)
-    }
-    
     return (
       <Container maxWidth="sm">
         <Typography 
@@ -116,48 +99,52 @@ function MyPoints(props) {
           My Points
         </Typography>
         <List className={classes.list}>
-          {fetchedPoints ? <Divider/> : null}
+          {fetchedPoints.length > 0 && <Divider/>}
           <TransitionGroup>
-            {fetchedPoints ? fetchedPoints.map((element) => {
-              return (
-                <CSSTransition
-                  key={element.id}
-                  timeout={500}
-                  classNames="item"
-                >
-                  <ListItem 
+            {fetchedPoints.length > 0 && 
+              fetchedPoints.map((element) => {
+                return (
+                  <CSSTransition
                     key={element.id}
-                    divider 
-                    dense 
+                    timeout={500}
+                    classNames="item"
                   >
-                    <ListItemIcon 
-                      style={{ color: theme.palette.common.strongGreen }}
-                      onClick={handleToggle(fetchedPoints.indexOf(element))}
+                    <ListItem 
+                      key={element.id}
+                      divider 
+                      dense 
                     >
-                        { element.star ? <StarIcon /> : <StarBorderIcon />}
-                    </ListItemIcon>
-                    <ListItemText 
-                      id={element.id} 
-                      primary={element.name === 'Point' ? `Point ${element.helpNum}` : element.name}
-                      secondary={
-                        <Typography
-                          component="span"
-                          variant="subtitle2"
-                          color="secondary"
-                        >
-                          lat: {element.lat}<br/>lng: {element.lng}
-                        </Typography>
-                      }                      
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton edge="end" aria-label="comments" onClick={deletePoint(element.id)}>
-                        <CloseIcon style={{ color: theme.palette.common.lightGreen }}/>
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </CSSTransition>
-              )
-            }) : 
+                      <ListItemIcon 
+                        style={{ color: theme.palette.common.strongGreen }}
+                        onClick={togleLikePoint(fetchedPoints.indexOf(element))}
+                      >
+                          { element.star ? <StarIcon /> : <StarBorderIcon />}
+                      </ListItemIcon>
+                      <ListItemText 
+                        id={element.id} 
+                        primary={element.name === 'Point' ? `Point ${element.helpNum}` : element.name}
+                        secondary={
+                          <Typography
+                            component="span"
+                            variant="subtitle2"
+                            color="secondary"
+                          >
+                            lat: {element.lat}<br/>lng: {element.lng}
+                          </Typography>
+                        }                      
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton edge="end" aria-label="comments" onClick={deletePoint(element.id)}>
+                          <CloseIcon style={{ color: theme.palette.common.lightGreen }}/>
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  </CSSTransition>
+                )
+              })
+            }
+          </TransitionGroup>
+          {fetchedPoints.length === 0 && 
               <Typography 
                 component="h1" 
                 variant="subtitle1" 
@@ -167,8 +154,7 @@ function MyPoints(props) {
               >
                 You haven't Points yet 🤔
               </Typography>
-            }
-          </TransitionGroup>
+          }
         </List>
         <Button 
           variant="contained" 
@@ -188,7 +174,6 @@ function MyPoints(props) {
             <Typography
               variant='subtitle2'
               className={classes.buttonText}
-              
             >
               ADD NEW POINT
             </Typography>

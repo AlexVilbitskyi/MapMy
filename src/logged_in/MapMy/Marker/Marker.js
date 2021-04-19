@@ -1,8 +1,8 @@
 import React from 'react';
-import MarkerNormal from './Marker.png'
-import MarkerSelected from './MarkerSelected.png'
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
+import MarkerNormal from './Marker.png'
+import MarkerSelected from './MarkerSelected.png'
 
 const useStyles = makeStyles((theme) => ({
     pointName: {
