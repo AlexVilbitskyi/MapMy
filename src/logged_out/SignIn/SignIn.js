@@ -74,18 +74,6 @@ export default function SignIn(props) {
     setIsLoggedIn(true);
   }, [setIsLoggedIn]);
 
-  const handleFormSubmit = useCallback((event) => {
-    event.preventDefault()
-    if (event.target.elements.password.value !== 'ExamplePassword') {
-      setStatus("invalid_password")
-    } else if (event.target.elements.email.value !== 'ExampleEmail') {
-      setStatus("invalid_email")
-    } else {
-      setStatus(null)
-      logIn()
-    }
-  }, []);
-
   const logIn = useCallback(async () => {
     let userInfo = {
       email,
@@ -96,12 +84,23 @@ export default function SignIn(props) {
     } catch(e) {
       console.log(e)
     }
-  }, [email, password]);
+  }, [email, password, setAuthTokens, setLogin]);
+
+  const handleFormSubmit = useCallback((event) => {
+    event.preventDefault()
+    if (event.target.elements.password.value !== 'ExamplePassword') {
+      setStatus("invalid_password")
+    } else if (event.target.elements.email.value !== 'ExampleEmail') {
+      setStatus("invalid_email")
+    } else {
+      setStatus(null)
+      logIn()
+    }
+  }, [logIn]);
 
   if (isLoggedIn) {
     return <Redirect to="/" />;
   }
-
 
   return (
     <div className={classes.root}>
@@ -187,7 +186,6 @@ export default function SignIn(props) {
               variant="contained"
               className={classes.submit}
               color="primary"
-              // onClick={submit}
               size="large"
             >
               Sign In

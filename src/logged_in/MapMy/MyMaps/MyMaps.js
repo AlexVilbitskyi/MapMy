@@ -33,6 +33,7 @@ function MyMaps(props) {
     const { fetchedPoints } = usePoints()
 
     const { setSelectedTab } = props;
+
     useEffect(() => {
         setSelectedTab('Map');
     }, [setSelectedTab]);

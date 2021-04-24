@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Link } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import { 
@@ -233,4 +233,4 @@ function Header(props) {
     );
 }
 
-export default Header;
+export default memo(Header)

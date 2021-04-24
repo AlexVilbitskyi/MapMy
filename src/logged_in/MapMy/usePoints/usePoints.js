@@ -13,29 +13,29 @@ const asyncLocalStorage = {
 
 const usePoints = () => {
     const [fetchedPoints, setFetchedPoints] = useState([])
-      
-    useEffect(() => {
-      (async () => {
-        setFetchedPoints(JSON.parse(await asyncLocalStorage.getItem('points')) || [])
-      })()
-    }, [])
 
-    const deletePoint = (id) => async () => {
+    const fetchPoints = useCallback(() => {
+        (async () => {
+            setFetchedPoints(JSON.parse(await asyncLocalStorage.getItem('points')) || [])
+        })()
+    }, [setFetchedPoints])
+
+    const deletePoint = useCallback((id) => async () => {
         let helpArr = fetchedPoints.filter(item => item.id !== id)
 
         await asyncLocalStorage.setItem('points', JSON.stringify(helpArr))
         setFetchedPoints(helpArr || [])
-    }
+    }, [fetchedPoints])
 
-    const togleLikePoint = (index) => async () => {
+    const togleLikePoint = useCallback((index) => async () => {
         const helpArr = [...fetchedPoints]
         helpArr[index].star = !helpArr[index].star
 
         await asyncLocalStorage.setItem('points', JSON.stringify(helpArr))
         setFetchedPoints(helpArr)
-    }
+    }, [fetchedPoints])
 
-    const addPoint = (coordinates, pointName) => async () => {
+    const addPoint = useCallback((coordinates, pointName) => async () => {
         let pointNumbers = []
 
         // Set the new point number based on greatest of existing point numbers plus 1
@@ -58,7 +58,9 @@ const usePoints = () => {
         
         await asyncLocalStorage.setItem('points', JSON.stringify(newArrOfPoints))
         setFetchedPoints(newArrOfPoints)
-    }
+    }, [fetchedPoints])
+
+    useEffect(fetchPoints, [fetchPoints])
   
     return { fetchedPoints, deletePoint, togleLikePoint, addPoint};
 };

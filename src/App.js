@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { AuthContext } from "./context/auth"
 import PrivateRoute from './PrivateRoute/PrivateRoute.js'
 import { 
@@ -33,10 +33,10 @@ function App() {
   const matches = useMediaQuery('(min-width:576px)');
   const classes = useStyles();
 
-  const setTokens = (data) => {
+  const setTokens = useCallback((data) => {
     localStorage.setItem("tokens", JSON.stringify(data));
     setAuthTokens(data);
-  }
+  }, [])
 
   return (
     <AuthContext.Provider value={{ authTokens, setAuthTokens: setTokens }}>

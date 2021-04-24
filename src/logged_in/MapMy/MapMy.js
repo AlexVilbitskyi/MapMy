@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import {
   Switch,
   Route,
@@ -37,4 +37,4 @@ function MapMy() {
     );
 }
 
-export default MapMy;
+export default memo(MapMy)
