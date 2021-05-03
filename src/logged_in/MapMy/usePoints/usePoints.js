@@ -3,11 +3,11 @@ import { useState, useEffect, useCallback } from "react";
 const asyncLocalStorage = {
     setItem: async function (key, value) {
         await Promise.resolve();
-        localStorage.setItem(key, value);
+        window.localStorage.setItem(key, value);
     },
     getItem: async function (key) {
         await Promise.resolve();
-        return localStorage.getItem(key);
+        return window.localStorage.getItem(key);
     }
 };
 
@@ -23,7 +23,6 @@ const usePoints = () => {
     const deletePoint = useCallback((id) => async () => {
         let helpArr = fetchedPoints.filter(item => item.id !== id)
 
-        await asyncLocalStorage.setItem('points', JSON.stringify(helpArr))
         setFetchedPoints(helpArr || [])
     }, [fetchedPoints])
 
@@ -31,38 +30,29 @@ const usePoints = () => {
         const helpArr = [...fetchedPoints]
         helpArr[index].star = !helpArr[index].star
 
-        await asyncLocalStorage.setItem('points', JSON.stringify(helpArr))
         setFetchedPoints(helpArr)
     }, [fetchedPoints])
 
-    const addPoint = useCallback((coordinates, pointName) => async () => {
-        let pointNumbers = []
-
-        // Set the new point number based on greatest of existing point numbers plus 1
-        if(fetchedPoints.length > 0) {
-            for (let item of fetchedPoints) {
-                pointNumbers.push(item.helpNum)
-            }
-            pointNumbers.sort( (a, b) => b - a )
-        }
-
+    const addPoint = useCallback((coordinates, pointName, id) => async () => {
         const newPoint = {
-            id: Date.now(),
+            id: id,
             lat: coordinates.lat,
             lng: coordinates.lng,
-            helpNum: pointNumbers[0] + 1 || 1,
-            name: pointName || 'Point'
+            helpNum:  fetchedPoints.length > 0 ? Math.max(...fetchedPoints.map(point => point.helpNum)) + 1 : 1,
+            name: pointName || 'Point',
+            star: false
         }
-
-        let newArrOfPoints = [...fetchedPoints, newPoint]
         
-        await asyncLocalStorage.setItem('points', JSON.stringify(newArrOfPoints))
-        setFetchedPoints(newArrOfPoints)
+        setFetchedPoints([...fetchedPoints, newPoint])
     }, [fetchedPoints])
 
     useEffect(fetchPoints, [fetchPoints])
+
+    useEffect(() => {
+        asyncLocalStorage.setItem('points', JSON.stringify(fetchedPoints))
+    }, [fetchedPoints]);
   
-    return { fetchedPoints, deletePoint, togleLikePoint, addPoint};
+    return { fetchedPoints, deletePoint, togleLikePoint, addPoint };
 };
 
 export default usePoints

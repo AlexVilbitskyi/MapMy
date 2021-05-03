@@ -68,7 +68,7 @@ function AddPoint(props) {
             setOpenErrorModal(true)
             return null 
         } else {
-            addPoint(coordinates, pointName)()
+            addPoint(coordinates, pointName, Date.now())()
         }
 
         setOpenFinishModal(true)
