@@ -90,7 +90,7 @@ function AddPoint(props) {
             </Typography>
             <Box className={classes.mapContainer}>
                 <GoogleMapReact
-                    // bootstrapURLKeys={{ key: 'AIzaSyBUUgZe-7xcqUmyoRvM4OnOwX-wj849dr1' }}
+                    // bootstrapURLKeys={{ key: 'AIzaSyBUUgZe-7xcqUmyoRvM4OnOwX-wj849dr4' }}
                     defaultCenter={mapProps.center}
                     defaultZoom={mapProps.zoom}
                     onClick={e => {
